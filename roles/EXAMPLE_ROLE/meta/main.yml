@@ -1,0 +1,13 @@
+---
+galaxy_info:
+  role_name: __ROLE_NAME__
+  author: Florian Strunk
+  description: __ROLE_DESCRIPTION__
+  company: clbsoldev
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions: ["bookworm", "trixie"]
+
+dependencies: []

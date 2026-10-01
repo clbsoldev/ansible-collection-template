@@ -1,0 +1,68 @@
+name: Lint & Syntax Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: ansible-lint + yamllint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install linters
+        run: |
+          pip install --upgrade pip
+          pip install ansible-core ansible-lint yamllint
+
+      - name: yamllint
+        run: yamllint .
+
+      - name: ansible-lint
+        run: ansible-lint
+
+  syntax-check:
+    name: Syntax check (per role)
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        # List every role directory under roles/ here.
+        # Kept explicit (not auto-discovered) so a broken new role
+        # doesn't silently fail to get tested if someone forgets to wire it up.
+        role:
+          - EXAMPLE_ROLE
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install ansible-core
+        run: pip install ansible-core
+
+      - name: Build minimal test playbook
+        run: |
+          mkdir -p tests/output
+          cat > tests/output/test-${{ matrix.role }}.yml <<EOF
+          ---
+          - name: Syntax check for role ${{ matrix.role }}
+            hosts: localhost
+            gather_facts: false
+            roles:
+              - role: ${{ matrix.role }}
+          EOF
+
+      - name: ansible-playbook --syntax-check
+        env:
+          ANSIBLE_ROLES_PATH: ${{ github.workspace }}/roles
+        run: ansible-playbook tests/output/test-${{ matrix.role }}.yml --syntax-check

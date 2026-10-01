@@ -1,0 +1,43 @@
+name: Release
+
+# Tag pushes (vX.Y.Z) trigger this. galaxy.yml's "version" field should match
+# the tag before tagging - this workflow checks that, it does not bump it.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  verify-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify galaxy.yml version matches tag
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          GALAXY_VERSION=$(grep '^version:' galaxy.yml | awk '{print $2}')
+          if [ "$TAG" != "$GALAXY_VERSION" ]; then
+            echo "::error::Tag v$TAG does not match galaxy.yml version $GALAXY_VERSION"
+            exit 1
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install ansible-core
+        run: pip install ansible-core
+
+      - name: Build collection artifact
+        run: ansible-galaxy collection build --output-path build/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: build/*.tar.gz
+
+      # Optional: uncomment once you want to publish to Galaxy/Automation Hub
+      # - name: Publish to Ansible Galaxy
+      #   run: ansible-galaxy collection publish build/*.tar.gz --api-key "${{ secrets.GALAXY_API_KEY }}"

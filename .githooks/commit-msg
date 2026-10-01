@@ -1,0 +1,48 @@
+# <type>[optional scope]: <description>
+#
+# [optional body]
+#
+# [optional footer(s)]
+#
+# --- Conventional Commits cheat sheet (release-please reads these) ---
+# type:
+#   feat     - new role / new variable / new behavior      -> minor bump
+#   fix      - bugfix, no new behavior                      -> patch bump
+#   chore    - tooling, CI, non-release-relevant changes     -> no bump
+#   docs     - README/CHANGELOG/comments only                -> no bump
+#   refactor - internal restructuring, no behavior change    -> no bump
+#   test     - test-only changes                             -> no bump
+#
+# Breaking change: add "!" after type/scope, e.g. "feat!: ..."
+# or add a footer "BREAKING CHANGE: <description>"           -> major bump
+#
+# scope (optional): the role or area affected, e.g.
+#   feat(linux_os_updates): add reboot-window variable
+#
+# First line <= 72 chars, imperative mood ("add", not "added"/"adds").
+strfl89@MBP-von-Florian Downloads % cat commit-msg 
+#!/usr/bin/env bash
+# Conventional Commits gate, run locally by git before the commit object
+# is created. Enable once per clone with:
+#   git config core.hooksPath .githooks
+set -euo pipefail
+
+MSG_FILE="$1"
+FIRST_LINE=$(head -n1 "$MSG_FILE")
+
+PATTERN='^(feat|fix|chore|docs|refactor|test|ci)(\([a-z0-9_-]+\))?(!)?: .+'
+
+if [[ "$FIRST_LINE" =~ ^Merge ]]; then
+  exit 0  # don't block merge commits
+fi
+
+if ! [[ "$FIRST_LINE" =~ $PATTERN ]]; then
+  echo "ERROR: commit message does not follow Conventional Commits." >&2
+  echo "  got:      $FIRST_LINE" >&2
+  echo "  expected: <type>(<scope>): <description>" >&2
+  echo "  types:    feat fix chore docs refactor test ci" >&2
+  echo "" >&2
+  echo "See .gitmessage for the full cheat sheet, or bypass once with:" >&2
+  echo "  git commit --no-verify" >&2
+  exit 1
+fi

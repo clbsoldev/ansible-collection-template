@@ -1,0 +1,11 @@
+---
+- name: Assert required variables are defined
+  ansible.builtin.assert:
+    that:
+      - __role_name___enabled is defined
+    fail_msg: "__ROLE_NAME__ requires __role_name___enabled to be set"
+
+- name: TODO - replace with actual role logic
+  ansible.builtin.debug:
+    msg: "__ROLE_NAME__ placeholder task executed"
+  when: __role_name___enabled | bool

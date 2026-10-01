@@ -1,0 +1,26 @@
+### GENERATED CONTENT - run ./bootstrap.sh after using this template ###
+namespace: clbsoldev
+name: __COLLECTION_NAME__          # e.g. "linux", "cisco_ios", "zabbix"
+# x-release-please-version
+version: 0.1.0
+readme: README.md
+authors:
+  - Florian Strunk <strfl89@clb-sol.dev>
+
+description: __COLLECTION_DESCRIPTION__
+license:
+  - MIT
+license_file: LICENSE
+tags:
+  - __COLLECTION_NAME__
+  - clbsoldev
+
+repository: https://github.com/clbsoldev/ansible-collection-__COLLECTION_NAME__
+issues: https://github.com/clbsoldev/ansible-collection-__COLLECTION_NAME__/issues
+documentation: https://github.com/clbsoldev/ansible-collection-__COLLECTION_NAME__/blob/main/README.md
+homepage: https://clb-sol.dev
+
+build_ignore:
+  - '*.tar.gz'
+  - tests/output
+  - .github

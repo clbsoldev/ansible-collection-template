@@ -1,0 +1,5 @@
+---
+# Defaults only: infrastructure-level fallbacks that must work even without
+# NetBox Config Context. Deployment-specific values belong in group_vars /
+# NetBox, never hardcoded here (SSOT principle).
+__role_name___enabled: true

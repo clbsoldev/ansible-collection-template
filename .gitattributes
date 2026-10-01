@@ -1,0 +1,20 @@
+# Normalize line endings for everything text-based
+* text=auto eol=lf
+
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+
+# Files maintained by release-please: exclude from language stats and
+# diff stats so they don't skew repo language detection / PR diffs.
+CHANGELOG.md linguist-generated=true
+.release-please-manifest.json linguist-generated=true
+
+# Keep these out of `git archive` exports (galaxy.yml's build_ignore
+# already excludes them from the ansible-galaxy collection tarball;
+# this covers plain git-archive usage too)
+.github export-ignore
+tests export-ignore
+bootstrap.sh export-ignore

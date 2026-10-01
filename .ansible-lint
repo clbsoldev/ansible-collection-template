@@ -1,0 +1,18 @@
+---
+# https://ansible.readthedocs.io/projects/lint/configuring/
+profile: production
+
+exclude_paths:
+  - .github/
+  - tests/output/
+  - CHANGELOG.md
+
+# Start lenient - tighten profile (min -> basic -> moderate -> safety -> shared -> production)
+# once the role base is stable. Loosen individual rules here only with a comment why.
+skip_list: []
+
+warn_list:
+  - experimental
+  - yaml[line-length]
+
+use_default_rules: true

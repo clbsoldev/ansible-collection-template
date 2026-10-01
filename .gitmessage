@@ -1,0 +1,22 @@
+# <type>[optional scope]: <description>
+#
+# [optional body]
+#
+# [optional footer(s)]
+#
+# --- Conventional Commits cheat sheet (release-please reads these) ---
+# type:
+#   feat     - new role / new variable / new behavior      -> minor bump
+#   fix      - bugfix, no new behavior                      -> patch bump
+#   chore    - tooling, CI, non-release-relevant changes     -> no bump
+#   docs     - README/CHANGELOG/comments only                -> no bump
+#   refactor - internal restructuring, no behavior change    -> no bump
+#   test     - test-only changes                             -> no bump
+#
+# Breaking change: add "!" after type/scope, e.g. "feat!: ..."
+# or add a footer "BREAKING CHANGE: <description>"           -> major bump
+#
+# scope (optional): the role or area affected, e.g.
+#   feat(linux_os_updates): add reboot-window variable
+#
+# First line <= 72 chars, imperative mood ("add", not "added"/"adds").

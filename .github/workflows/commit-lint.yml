@@ -1,0 +1,23 @@
+name: Commit message lint
+
+# Direct-push workflow (no PRs): the .githooks/commit-msg hook is the real
+# gate, run locally before the commit exists. This is just a safety net in
+# case that hook wasn't enabled or was bypassed with --no-verify - it can't
+# undo the push, but it flags it so you notice before release-please parses
+# a non-conforming commit and silently skips it (no release triggered).
+on:
+  push:
+    branches: [main]
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: .commitlintrc.json
+          failOnWarnings: false
