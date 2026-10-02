@@ -13,7 +13,7 @@ jobs:
     outputs:
       bootstrapped: ${{ steps.check.outputs.bootstrapped }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - id: check
         run: |
@@ -30,7 +30,7 @@ jobs:
     if: needs.guard.outputs.bootstrapped == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v7
         with:
@@ -63,7 +63,7 @@ jobs:
         role:
           - EXAMPLE_ROLE
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v7
         with:
