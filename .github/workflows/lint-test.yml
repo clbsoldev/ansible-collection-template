@@ -7,8 +7,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  guard:
+    name: Check if template is bootstrapped
+    runs-on: ubuntu-latest
+    outputs:
+      bootstrapped: ${{ steps.check.outputs.bootstrapped }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: check
+        run: |
+          if [ -d "roles/EXAMPLE_ROLE" ]; then
+            echo "bootstrapped=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::roles/EXAMPLE_ROLE still present - this is the raw template, not a bootstrapped collection. Skipping lint/syntax-check. Run ./bootstrap.sh to activate real checks."
+          else
+            echo "bootstrapped=true" >> "$GITHUB_OUTPUT"
+          fi
+
   lint:
     name: ansible-lint + yamllint
+    needs: guard
+    if: needs.guard.outputs.bootstrapped == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,14 +49,17 @@ jobs:
 
   syntax-check:
     name: Syntax check (per role)
+    needs: [guard, lint]
+    if: needs.guard.outputs.bootstrapped == 'true'
     runs-on: ubuntu-latest
-    needs: lint
     strategy:
       fail-fast: false
       matrix:
         # List every role directory under roles/ here.
         # Kept explicit (not auto-discovered) so a broken new role
         # doesn't silently fail to get tested if someone forgets to wire it up.
+        # Update this after running bootstrap.sh - replace EXAMPLE_ROLE
+        # with the real role name(s).
         role:
           - EXAMPLE_ROLE
     steps:

@@ -12,6 +12,15 @@ rules:
   indentation:
     spaces: 2
     indent-sequences: consistent
+  # ansible-lint's production profile requires exactly these values for a
+  # custom .yamllint to be considered compatible - deviating makes
+  # ansible-lint ignore this file's fix-mode and just warn instead.
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: false
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
 
 ignore: |
   .github/

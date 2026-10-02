@@ -1,14 +1,21 @@
 #!/usr/bin/env bash
 # Run this ONCE right after creating a new repo from this template.
 # Example:
-#   ./bootstrap.sh linux linux_os_updates "Linux base roles" "Linux OS update management"
+#   ./bootstrap.sh linux linux_os_updates "Linux base roles" "Linux OS update management" linux
 #
-# Usage: ./bootstrap.sh <collection_name> <role_name> <collection_description> <role_description>
+# <collection_category> must be one of Galaxy's fixed categories:
+#   application, cloud, database, eda, infrastructure, linux, monitoring,
+#   networking, security, storage, tools, windows
+#
+# Usage: ./bootstrap.sh <collection_name> <role_name> <collection_description> <role_description> <collection_category>
 set -euo pipefail
 
-if [ "$#" -ne 4 ]; then
-  echo "Usage: $0 <collection_name> <role_name> <collection_description> <role_description>"
-  echo "Example: $0 linux linux_os_updates 'Linux base roles' 'Linux OS update management'"
+VALID_CATEGORIES="application cloud database eda infrastructure linux monitoring networking security storage tools windows"
+
+if [ "$#" -ne 5 ]; then
+  echo "Usage: $0 <collection_name> <role_name> <collection_description> <role_description> <collection_category>"
+  echo "Example: $0 linux linux_os_updates 'Linux base roles' 'Linux OS update management' linux"
+  echo "Valid categories: ${VALID_CATEGORIES}"
   exit 1
 fi
 
@@ -16,8 +23,15 @@ COLLECTION_NAME="$1"
 ROLE_NAME="$2"
 COLLECTION_DESC="$3"
 ROLE_DESC="$4"
+COLLECTION_CATEGORY="$5"
 ROLE_NAME_LOWER_UNDERSCORE="${ROLE_NAME//-/_}"
 RELEASE_DATE="$(date +%Y-%m-%d)"
+
+if [[ ! " ${VALID_CATEGORIES} " =~ " ${COLLECTION_CATEGORY} " ]]; then
+  echo "ERROR: '${COLLECTION_CATEGORY}' is not a valid Galaxy category."
+  echo "Valid categories: ${VALID_CATEGORIES}"
+  exit 1
+fi
 
 echo "==> Renaming roles/EXAMPLE_ROLE -> roles/${ROLE_NAME}"
 git mv "roles/EXAMPLE_ROLE" "roles/${ROLE_NAME}" 2>/dev/null || mv "roles/EXAMPLE_ROLE" "roles/${ROLE_NAME}"
@@ -26,6 +40,7 @@ echo "==> Replacing placeholders in all tracked text files"
 FILES=$(grep -rIl \
   -e "__COLLECTION_NAME__" \
   -e "__COLLECTION_DESCRIPTION__" \
+  -e "__COLLECTION_CATEGORY__" \
   -e "__ROLE_NAME__" \
   -e "__ROLE_DESCRIPTION__" \
   -e "__role_name__" \
@@ -37,6 +52,7 @@ for f in $FILES; do
   sed -i \
     -e "s/__COLLECTION_NAME__/${COLLECTION_NAME}/g" \
     -e "s/__COLLECTION_DESCRIPTION__/${COLLECTION_DESC}/g" \
+    -e "s/__COLLECTION_CATEGORY__/${COLLECTION_CATEGORY}/g" \
     -e "s/__ROLE_NAME__/${ROLE_NAME}/g" \
     -e "s/__ROLE_DESCRIPTION__/${ROLE_DESC}/g" \
     -e "s/__role_name__/${ROLE_NAME_LOWER_UNDERSCORE}/g" \
